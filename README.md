@@ -14,6 +14,7 @@ collection/           # 整理后的条目，按场景分类
   work.md             # 职场 / 沟通
   emotion.md          # 情绪、态度、语气
   idioms.md           # 习语、俚语、固定搭配
+  praise.md           # 夸奖与评价
 TEMPLATE.md           # 条目格式
 ```
 
