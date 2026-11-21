@@ -16,6 +16,7 @@ collection/           # 整理后的条目，按场景分类
   idioms.md           # 习语、俚语、固定搭配
   praise.md           # 夸奖与评价
 TEMPLATE.md           # 条目格式
+index.html            # GitHub Pages 网页（新增分类时要在 CATS 里加一行）
 ```
 
 ## 怎么用

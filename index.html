@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Native Language</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf8f3;--fg:#2b2a27;--muted:#8a857a;--line:#e6e1d6;--accent:#b5452b;--card:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1b19;--fg:#ece8df;--muted:#9a958a;--line:#34322e;--accent:#e07a5f;--card:#252421}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.75 "Noto Sans SC","Noto Serif JP",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:48px 16px 80px}
+header h1{font-family:"Noto Serif JP",serif;font-size:2.2rem;margin:0;letter-spacing:.02em}
+header p{color:var(--muted);margin:.4rem 0 1.6rem}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+nav button{border:1px solid var(--line);background:var(--card);color:var(--fg);padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit;font-size:.9rem}
+nav button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+input{width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);font:inherit;margin-bottom:28px}
+section h1{display:none}
+section h3{font-family:"Noto Serif JP",serif;font-size:1.45rem;margin:0 0 .6rem;color:var(--accent)}
+.entry{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.entry .cat{font-size:.75rem;color:var(--muted);float:right}
+blockquote{margin:0 0 1rem;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--accent);font-family:"Noto Serif JP",serif}
+blockquote p{margin:.2rem 0}
+ul{padding-left:1.2rem}li{margin:.15rem 0}
+code{background:var(--line);padding:0 4px;border-radius:4px}
+.empty{color:var(--muted);text-align:center;padding:40px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Native Language</h1><p>我觉得地道、好看、有味道的 native 用法</p></header>
+  <nav id="nav"></nav>
+  <input id="q" placeholder="搜索表达、意思、标签…">
+  <main id="list"></main>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script>
+// 新增分类时在这里加一行
+const CATS=[["praise","夸奖与评价"],["emotion","情绪、态度、语气"],["daily","日常口语"],["writing","书面 / 写作"],["work","职场 / 沟通"],["idioms","习语、俚语"]];
+let entries=[],cur="all";
+const nav=document.getElementById("nav"),list=document.getElementById("list"),q=document.getElementById("q");
+function btn(id,label){const b=document.createElement("button");b.textContent=label;b.onclick=()=>{cur=id;render()};b.dataset.id=id;nav.appendChild(b)}
+btn("all","全部");CATS.forEach(([id,l])=>btn(id,l));
+Promise.all(CATS.map(([id,label])=>fetch(`collection/${id}.md`).then(r=>r.ok?r.text():"").then(t=>{
+  t.split(/^(?=### )/m).filter(s=>s.startsWith("### ")).forEach(md=>entries.push({id,label,md,text:md.toLowerCase()}));
+}))).then(render);
+q.oninput=render;
+function render(){
+  [...nav.children].forEach(b=>b.classList.toggle("on",b.dataset.id===cur));
+  const k=q.value.trim().toLowerCase();
+  const shown=entries.filter(e=>(cur==="all"||e.id===cur)&&(!k||e.text.includes(k)));
+  list.innerHTML=shown.length?shown.map(e=>`<article class="entry"><span class="cat">${e.label}</span>${marked.parse(e.md)}</article>`).join(""):'<p class="empty">还没有条目</p>';
+}
+</script>
+</body>
+</html>
